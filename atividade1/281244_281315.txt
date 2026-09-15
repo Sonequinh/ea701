@@ -1,0 +1,114 @@
+#include <util/delay.h>
+
+#define F_CPU 16000000UL
+
+/*
+Alunos:
+Iago Lucini da Silva            281244
+Maria Clara Martinez Oliveira   281315
+*/
+
+int main (void) 
+{
+
+    // Declarando ponteiros de porta B (LED)
+    unsigned char *ponteiro_ddrb = (unsigned char *) 0x24;
+    unsigned char *ponteiro_portb = (unsigned char *) 0x25;
+    /*
+    Portas B utilizadas para os LEDs: 15(PB1), 16(PB2) e 17(PB3) Led branco, 18(PB4) led avulso
+    15, 16 e 17 são os bits, respectivamente 1, 2 e 3.
+    18 pertecem ao bit 4
+    */
+
+    // Declarando ponteiros de portas D (button)
+    unsigned char *ponteiro_ddrd = (unsigned char *) 0x2A;
+    unsigned char *ponteiro_pind = (unsigned char *) 0x29;
+    /*
+    Portas D utilizada para o botão: 5(PD3)
+    */
+ 
+    // Configurações inicias
+    *ponteiro_ddrd &= ~(1 << 3);              // Botão como entrada
+    *ponteiro_ddrb |= (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4);           // Led's como saídas
+
+    *ponteiro_portb &= ~((1 << 1) | (1 << 2) | (1 << 3) | (1 << 4));       // Começam desligados
+
+
+    // PB3 -> ~11 (blue) -> 17, PB2 -> ~10(green) -> 16, PB1 -> ~9(red) -> 5
+    // bit 4: led separado
+    // bit 3: blue
+    // bit 2: green
+    // bit 1: red
+    // Ordem: (0) apagado , (1) vermelho, (2) verde, (3) azul, (4) branco
+    // portb: (0bxxxx000x) -> (0bxxxx001x) -> (0bxxxx010x  ) -> (0bxxxx100x) -> (0bxxx111x)
+
+    unsigned char caso = 0, botao_ant = 0x08;             // Começa apagado
+
+    while (1)
+    {   
+        unsigned char botao_atual = (*ponteiro_pind & 0x08);
+
+        // Verificando se o botão está pressionado
+        if (botao_atual == 0)
+        {
+            *ponteiro_portb |= (1 << 4);
+        }
+        else
+        {
+            *ponteiro_portb &= ~(1 << 4);
+        }
+
+        //  Verificação do botão
+        if (botao_atual && !botao_ant)
+        {
+            // Debounce
+            _delay_ms(50);
+            
+            // Verificando se o botão continua apertado
+            if (*ponteiro_pind & (1 << 3))
+            {
+                caso++; // Avança para o próximo caso
+
+                // "Reseta" o ciclo de casos
+                if (caso > 4) 
+                {
+                    caso = 0;
+                }
+            }
+        }
+
+        botao_ant = botao_atual;
+
+        // Verificando qual caso estou e agindo referente
+        switch (caso)
+        {
+        case 0:     // Apagado
+            *ponteiro_portb &= ~(0b00001110);       // Desliga os 3 bits do LED RGB
+
+            break;
+            
+        case 1:     // Luz vermelha
+            *ponteiro_portb |= 0b00000010;          // Ligando o bit 1 para vermelho       
+            *ponteiro_portb &= ~(0b00001100);       // Desativando os bits 2 e 3
+
+            break;
+        case 2:     // Luz verde
+            *ponteiro_portb |= 0b00000100;          // Ligando o bit 2 para verde       
+            *ponteiro_portb &= ~(0b00001010);       // Desativando os bits 1 e 3
+
+            break;
+        case 3:     // Luz azul
+            *ponteiro_portb |= 0b00001000;          // Ligando o bit 3 para zaul       
+            *ponteiro_portb &= ~(0b00000110);       // Desativando os bits 1 e 2
+
+            break;
+        case 4:     // Luz branca
+            *ponteiro_portb |= 0b00001110;          // Ligando os bits 1,2 e 3
+
+            break;
+
+        }
+
+    }
+    
+}
