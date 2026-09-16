@@ -2,6 +2,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+//variáveis globais
 unsigned char *eimsk = (unsigned char *) 0x3D;
 unsigned char *eifr = (unsigned char *) 0x3C; //flags
 unsigned char *eicra = (unsigned char *) 0x69;
@@ -14,41 +15,43 @@ int interrompeu=0;
 
 
 void inicializa(){
-cli();
+    cli();
 
-*p_ddrb = *p_ddrb | 0x20;
-*ponteiro_ddrd = *ponteiro_ddrd & (~0x4);
+    *p_ddrb = *p_ddrb | 0x20;
+    *ponteiro_ddrd = *ponteiro_ddrd & (~0x4);
 
-*eicra=0b10; //define qual evento é detectado para uma certa interrupção (borda de descida)
-*eimsk=0b01; //habilita ou desabilita uma interrupção (neste caso int0)
+    *eicra=0b10; //define qual evento é detectado para uma certa interrupção (borda de descida)
+    *eimsk=0b01; //habilita ou desabilita uma interrupção (neste caso int0)
 
-sei();
+    sei();
 }
 
 ISR (INT0_vect) {
-interrompeu=1;
+    interrompeu=1;
+    *eimsk=0b00;
 }
 
 int main(void) {
-inicializa();
+    inicializa();
 
-while (1) {
-if(interrompeu){//borda de descida
-_delay_ms(15); //espera transiente
-atual=*ponteiro_pind & 0x4;
-if(atual == 0){//mede de novo depois do delay
-if((*ponteiro_portb & 0x20)==0){
-*ponteiro_portb = *ponteiro_portb | 0x20;//liga
-}
-else{
-*ponteiro_portb = *ponteiro_portb & (~0x20);//desliga
-}
-}
-interrompeu=0;
-}
+    while (1) {
+        if(interrompeu){//borda de descida
+            _delay_ms(15); //espera transiente
+            atual=*ponteiro_pind & 0x4;
+            if(atual == 0){//mede de novo depois do delay
+                if((*ponteiro_portb & 0x20)==0){
+                    *ponteiro_portb = *ponteiro_portb | 0x20;//liga
+                }
+                else{
+                    *ponteiro_portb = *ponteiro_portb & (~0x20);//desliga
+                }
+            }
+            interrompeu=0;
+            *eimsk=0b01; //habilita as interrupções novamente
+        }
 
-}
+    }
 
 
-return 0;
+    return 0;
 }
