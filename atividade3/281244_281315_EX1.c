@@ -28,7 +28,7 @@ void inicializa(){
 
 ISR (INT0_vect) {
     interrompeu=1;
-    *eimsk=0b00;
+    *eimsk=0b00; //desabilita interrupções
 }
 
 int main(void) {
