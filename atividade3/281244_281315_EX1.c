@@ -37,7 +37,7 @@ int main(void) {
     while (1) {
         if(interrompeu){//borda de descida
             _delay_ms(15); //espera transiente
-            atual=*ponteiro_pind & 0x4;
+            atual=*ponteiro_pind & 0x4; //faz leitura
             if(atual == 0){//mede de novo depois do delay
                 if((*ponteiro_portb & 0x20)==0){
                     *ponteiro_portb = *ponteiro_portb | 0x20;//liga
