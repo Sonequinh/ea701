@@ -32,8 +32,8 @@ void inicializa(){
 
 ISR (PCINT2_vect) {
     interrompeu = 1;
-    *p_pcmsk2 = *p_pcmsk2 & (~0x04); //desabilita interrupção
     atual_interrompe = *ponteiro_pind & 0x4; //faz leitura para ser comparada 
+    *p_pcmsk2 = *p_pcmsk2 & (~0x04); //desabilita interrupção
 }
 
 int main(void) {
@@ -47,7 +47,7 @@ int main(void) {
             
             _delay_ms(15); //espera transiente
             atual = *ponteiro_pind & 0x4; //faz leitura depois do delay      
-            if(anterior==0x4 && atual == 0 && atual==atual_interrompe){ //Confer se houve uma borda de descida e se foi ruído conferindo se o valor é mantido após o delay
+            if((atual==atual_interrompe) && anterior==0x4 && atual == 0){ //Confer se houve uma borda de descida e se foi ruído conferindo se o valor é mantido após o delay
                 // Alterna o estado do LED
                 if((*ponteiro_portb & 0x20)==0){
                     *ponteiro_portb = *ponteiro_portb | 0x20; // Liga
