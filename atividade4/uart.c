@@ -1,8 +1,5 @@
 /*
- * File:   exercicio.c
- * Author: i281244
- *
- * Created on September 16, 2026, 9:43 AM
+
  */
 #define F_CPU 16000000UL
 
