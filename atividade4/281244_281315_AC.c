@@ -73,7 +73,7 @@ void configuracoes_inicias()
     *p_DDRD |=  (1 << 3) | (1 << 5) | (1 << 6);
     *p_PORTD &= ~((1 << 3) | (1 << 5) | (1 << 6));
 
-    rei();
+    sei();
 
 }
 
