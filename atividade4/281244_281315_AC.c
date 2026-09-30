@@ -8,7 +8,6 @@ Maria Clara Martinez 281315
 #include <util/delay.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <string.h>
 
 // Configurações de UART 
 unsigned char *p_UDR0 = (unsigned char *) 0xC6;
