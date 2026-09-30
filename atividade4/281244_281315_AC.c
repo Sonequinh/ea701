@@ -84,6 +84,7 @@ void enviar_mensagem(const char* mensagem)
     
 
     uint8_t i = 0;
+    // Copiando os caracteres do buffer
     while (mensagem[i] != '\0' && i < (sizeof(tx_buffer) - 1)) 
     {
         tx_buffer[i] = mensagem[i];
@@ -104,15 +105,18 @@ ISR (USART_RX_vect) // USART RECEIVE COMPLETE
 {
     //guarda o valor recebido
     char_recebido= *p_UDR0;
+    // Verifica se é final de linha
     if (char_recebido == '\r' || char_recebido == '\n')
-    {
+    {   
+        // 
         if (rx_posicao > 0 && !interrompeu)
         {
-            rx_buffer[rx_posicao] = '\0';
-            interrompeu = 1;
+            rx_buffer[rx_posicao] = '\0';   // Finaliza a string
+            interrompeu = 1;                
         }
     } else 
-    {
+    {   
+        //
         if ((rx_posicao < (sizeof(rx_buffer) - 1)) && (!interrompeu))
         {
             rx_buffer[rx_posicao] = char_recebido;
@@ -127,6 +131,7 @@ ISR (USART_TX_vect) // USART TRANSMIT COMPLETE
 {
     tx_posicao++;                           // Avança para o próximo caracter
 
+    // Verfica se não ao final da string
     if(tx_buffer[tx_posicao] != '\0')
     {
         *p_UDR0 = tx_buffer[tx_posicao];    // Escreve o caracter
@@ -192,6 +197,7 @@ int main ()
                         enviar_mensagem("Comando incorreto\n");
             }
 
+            // Reseta a recepção
             rx_posicao = 0; 
             interrompeu = 0;
         }
