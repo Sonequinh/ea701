@@ -24,8 +24,8 @@ unsigned char *p_UCSR0B = (unsigned char *) 0XC1;
 unsigned char *p_UCSR0C = (unsigned char *) 0XC2;
 
 // Configurações de LED
-unsigned char *p_PORTD = (unsigned char *) 0X2B;
-unsigned char *p_DDRD = (unsigned char *) 0X2A;
+unsigned char *p_PORTB = (unsigned char *) 0X25;
+unsigned char *p_DDRB = (unsigned char *) 0X24;
 
 // Variaveis globais:
 char char_recebido;
@@ -67,11 +67,11 @@ void configuracoes_inicias()
     *p_UCSR0C = 0x06;
 
     // LEDS
-    // Vermelho PD3
-    // Verde PD5
-    // Azul PD6
-    *p_DDRD |=  (1 << 3) | (1 << 5) | (1 << 6);
-    *p_PORTD &= ~((1 << 3) | (1 << 5) | (1 << 6));
+    // Vermelho PINO 12 -> PB4
+    // Verde PINO 11 -> PB3
+    // Azul PINO 13 -> PB5
+    *p_DDRB |=  (1 << 4) | (1 << 3) | (1 << 5);
+    *p_PORTB &= ~((1 << 4) | (1 << 3) | (1 << 5));
 
     sei();
 
@@ -151,31 +151,34 @@ int main ()
             {
                 switch (rx_buffer[0]) 
                 {
+                    // Vermelho PINO 12 -> PB4
+                    // Verde PINO 11 -> PB3
+                    // Azul PINO 13 -> PB5
                     case 'd': // Desligado
-                        *p_PORTD &= ~((1 << 3) | (1 << 5) | (1 << 6));
+                        *p_PORTB &= ~((1 << 4) | (1 << 3) | (1 << 5));
                         enviar_mensagem("Desligado\n");
                         break;
 
                     case 'r': // Vermelho
-                        *p_PORTD &= ~((1 << 5) | (1 << 6));
-                        *p_PORTD |= (1 << 3);
+                        *p_PORTB &= ~((1 << 3) | (1 << 5));
+                        *p_PORTB |= (1 << 4);
                         enviar_mensagem("Pisca vermelho\n");
                         break;
 
                     case 'g': // Verde
-                        *p_PORTD &= ~((1 << 3) | (1 << 6));
-                        *p_PORTD |= (1 << 5);
+                        *p_PORTB &= ~((1 << 4) | (1 << 5));
+                        *p_PORTB |= (1 << 3);
                         enviar_mensagem("Pisca verde\n");
                         break;
 
                     case 'b': // Azul
-                        *p_PORTD &= ~((1 << 3) | (1 << 5));
-                        *p_PORTD |= (1 << 6);
+                        *p_PORTB &= ~((1 << 3) | (1 << 4));
+                        *p_PORTB |= (1 << 5);
                         enviar_mensagem("Pisca azul\n");
                         break;
 
                     case 't': // Todos
-                        *p_PORTD |= (1 << 3) | (1 << 5) | (1 << 6);
+                        *p_PORTB |= (1 << 3) | (1 << 4) | (1 << 5);
                         enviar_mensagem("Pisca todos\n");
                         break;
 
