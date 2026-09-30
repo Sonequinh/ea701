@@ -60,11 +60,11 @@ void configuracoes_inicias()
     */
 
     *p_UBRR0H = 0;
-    *p_UBRR0L = 16;
+    *p_UBRR0L = 51;
 
     *p_UCSR0A = 0x20;
     *p_UCSR0B = 0xD8; 
-    *p_UCSR0C = 0x07;
+    *p_UCSR0C = 0x06;
 
     // LEDS
     // Vermelho PD3
