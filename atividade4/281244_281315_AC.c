@@ -78,24 +78,11 @@ void configuracoes_inicias()
 }
 
 void enviar_mensagem(const char* mensagem)
-{
-    // Aguarda o canal de transmissão ser liberado
-    while (tx_ocupado);
-    
+{    
 
-    uint8_t i = 0;
-    // Copiando os caracteres do buffer
-    while (mensagem[i] != '\0' && i < (sizeof(tx_buffer) - 1)) 
-    {
-        tx_buffer[i] = mensagem[i];
-        i++;
-    }
-    tx_buffer[i] = '\0'; // Garante o caractere nulo no final
+    tx_buffer = mensagem;
 
     tx_posicao = 0;
-    tx_ocupado = 1;
-
-    // Dispara a transmissão do primeiro caractere
     *p_UDR0 = tx_buffer[0];
 }
 
@@ -106,23 +93,11 @@ ISR (USART_RX_vect) // USART RECEIVE COMPLETE
     //guarda o valor recebido
     char_recebido= *p_UDR0;
     // Verifica se é final de linha
-    if (char_recebido == '\r' || char_recebido == '\n')
+    if (char_recebido != '\r' && char_recebido != '\n')
     {   
-        // 
-        if (rx_posicao > 0 && !interrompeu)
-        {
-            rx_buffer[rx_posicao] = '\0';   // Finaliza a string
-            interrompeu = 1;                
-        }
-    } else 
-    {   
-        //
-        if ((rx_posicao < (sizeof(rx_buffer) - 1)) && (!interrompeu))
-        {
-            rx_buffer[rx_posicao] = char_recebido;
-            rx_posicao += 1;
-        }   
-    }
+        rx_buffer[rx_posicao] = char_recebido;   // Finaliza a string
+        interrompeu = 1;                
+    } 
 
 }
 
@@ -135,9 +110,6 @@ ISR (USART_TX_vect) // USART TRANSMIT COMPLETE
     if(tx_buffer[tx_posicao] != '\0')
     {
         *p_UDR0 = tx_buffer[tx_posicao];    // Escreve o caracter
-    } else
-    {
-        tx_ocupado = 0;                     // Libera o canal
     }
 }
 
@@ -160,31 +132,47 @@ int main ()
                     // Verde PINO 11 -> PB3
                     // Azul PINO 13 -> PB5
                     case 'd': // Desligado
+                        enviar_mensagem("Desligado\n"); 
                         *p_PORTB &= ~((1 << 4) | (1 << 3) | (1 << 5));
-                        enviar_mensagem("Desligado\n");
-                        break;
+                    break;
 
                     case 'r': // Vermelho
-                        *p_PORTB &= ~((1 << 3) | (1 << 5));
+                        
                         *p_PORTB |= (1 << 4);
+                        _delay_ms(200;);
+                        *p_PORTB &= ~(1 << 4);
+                        _delay_ms(200;);
+
                         enviar_mensagem("Pisca vermelho\n");
                         break;
 
                     case 'g': // Verde
-                        *p_PORTB &= ~((1 << 4) | (1 << 5));
+
                         *p_PORTB |= (1 << 3);
+                        _delay_ms(200;);
+                        *p_PORTB &= ~(1 << 3);
+                        _delay_ms(200;);
+
                         enviar_mensagem("Pisca verde\n");
                         break;
 
                     case 'b': // Azul
-                        *p_PORTB &= ~((1 << 3) | (1 << 4));
+
                         *p_PORTB |= (1 << 5);
+                        _delay_ms(200;);
+                        *p_PORTB &= ~(1 << 5);
+                        _delay_ms(200;);
+
                         enviar_mensagem("Pisca azul\n");
                         break;
 
                     case 't': // Todos
                         *p_PORTB |= (1 << 3) | (1 << 4) | (1 << 5);
-                        enviar_mensagem("Pisca todos\n");
+                        _delay_ms(200);
+                        *p_PORTB &= ~((1 << 3) | (1 << 4) | (1 << 5));
+                        _delay_ms(200);
+
+                        enviar_mensagem("Pisca todos\n");   
                         break;
 
                     default:
