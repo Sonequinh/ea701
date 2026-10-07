@@ -43,9 +43,9 @@ void inicializa()
     
     OCR0A = 249;
     
+    *p_TIMSK0=0x01;
     *p_TCCR0A=0x02;
     *p_TCCR0B=0b00000011;
-    *p_TIMSK0=0x01;
 
     // USART
     /*
@@ -74,7 +74,7 @@ ISR (TIMER0_COMPA_vect)
 
     contador_12++;
     contador_13++;
-    contador_USART;
+    contador_USART++;
 
 
     // Pisca o pino 13 (bit 5): 0,5s aceso e 0,5s apagado
@@ -130,7 +130,6 @@ ISR (USART_TX_vect) // USART TRANSMIT COMPLETE
 
 void enviar_mensagem(const char* mensagem)
 {    
-
     tx_buffer = mensagem;
 
     tx_posicao = 0;
