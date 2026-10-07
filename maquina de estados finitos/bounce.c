@@ -17,13 +17,13 @@ unsigned char *p_pind = (unsigned char *) 0x29;
 unsigned char *p_ddrd = (unsigned char *) 0x2A;
 
 //variaveis maquina debouncer
-int estadoDB=0;
+int estadoDB = 0;
 volatile int contador=0;
 volatile int filtrado=1;
-int contagem_init=1;
+int contagem_init = 1;
 
 //variaveis maquina LED
-int estadoLED=0;
+int estadoLED = 0;
 
 void inverte_led()
 {
@@ -98,9 +98,9 @@ void inicializa(){
     //desligado
     *p_portb &= ~(0x20);
     cli();
-    *p_TCCR0A=0x00;
-    *p_TCCR0B=0x02;
-    *p_TIMSK0=0x01;
+    *p_TCCR0A = 0x00;
+    *p_TCCR0B = 0x02;
+    *p_TIMSK0 = 0x01;
     sei();
 }
 
@@ -112,56 +112,56 @@ int main(void) {
     inicializa();
 
     while (1){
-        int bt=*p_pind & 0x4;
+        int bt = *p_pind & 0x4;
         switch(estadoDB){
             case 0:
-                filtrado=1;
+                filtrado = 1;
                 if(bt){
-                    estadoDB=0;
+                    estadoDB = 0;
                 }
                 else{
-                    estadoDB=1;
+                    estadoDB = 1;
                     if(contagem_init){
-                        contagem_init=0;
-                        contador=0;
+                        contagem_init = 0;
+                        contador = 0;
                     }
                 }
             case 1:
                 if(contador>=156){
-                    contagem_init=1;
+                    contagem_init = 1;
                     if(bt){
-                        estadoDB=0;
-                        filtrado=1;
+                        estadoDB = 0;
+                        filtrado = 1;
                     }
                     else{
-                        estadoDB=2;
-                        filtrado=0;
+                        estadoDB = 2;
+                        filtrado = 0;
                     }
                 }
                 break;
             case 2:
-                filtrado=0;
+                filtrado = 0;
                 if(bt){
-                    estadoDB=3;
+                    estadoDB = 3;
                     if(contagem_init){
-                        contagem_init=0;
-                        contador=0;
+                        contagem_init = 0;
+                        contador = 0;
                     }
                 }
                 else{
-                    estadoDB=2;
+                    estadoDB = 2;
                 }
                 break;
             case 3:
-                if(contador>=156){
-                    contagem_init=1;
+                if(contador >= 156){
+                    contagem_init = 1;
                     if(bt){
-                        estadoDB=0;
-                        filtrado=1;
+                        estadoDB = 0;
+                        filtrado = 1;
                     }
                     else{
-                        estadoDB=2;
-                        filtrado=0;
+                        estadoDB = 2;
+                        filtrado = 0;
                     }
                 }
                 break;
