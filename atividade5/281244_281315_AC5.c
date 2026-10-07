@@ -4,23 +4,26 @@ Maria Clara martinez    281315
 */
 
 #include <avr/interrupt.h>
+
+void enviar_mensagem(const char *mensagem);
+
 //interrupções do temporizador
-unsigned char *p_TCCR0A = (unsigned char *) 0x44;
-unsigned char *p_TCCR0B = (unsigned char *) 0x45;
-unsigned char *p_TIMSK0 = (unsigned char *) 0x6E;
+volatile unsigned char *p_TCCR0A = (unsigned char *) 0x44;
+volatile unsigned char *p_TCCR0B = (unsigned char *) 0x45;
+volatile unsigned char *p_TIMSK0 = (unsigned char *) 0x6E;
 
 // USART Baud Rate 0 Register Low / High
-unsigned char *p_UDR0 = (unsigned char *) 0xC6;
+volatile unsigned char *p_UDR0 = (unsigned char *) 0xC6;
 
-unsigned char *p_UBRR0L = (unsigned char *) 0xC4; 
-unsigned char *p_UBRR0H = (unsigned char *) 0xC5;
+volatile unsigned char *p_UBRR0L = (unsigned char *) 0xC4; 
+volatile unsigned char *p_UBRR0H = (unsigned char *) 0xC5;
 
 // USART0 Control and Status Register A
-unsigned char *p_UCSR0A = (unsigned char *) 0XC0;
+volatile unsigned char *p_UCSR0A = (unsigned char *) 0XC0;
 // USART0 Control and Status Register B
-unsigned char *p_UCSR0B = (unsigned char *) 0XC1;
+volatile unsigned char *p_UCSR0B = (unsigned char *) 0XC1;
 // USART0 Control and Status Register C
-unsigned char *p_UCSR0C = (unsigned char *) 0XC2;
+volatile unsigned char *p_UCSR0C = (unsigned char *) 0XC2;
 
 //registradores do led
 unsigned char *p_ddrb = (unsigned char *) 0x24;
@@ -29,11 +32,10 @@ volatile unsigned char *p_portb = (unsigned char *) 0x25;
 
 volatile int contador_USART = 0, contador_12 = 0, contador_13 = 0;
 
-volatile char tx_buffer[200];
+volatile const char *tx_buffer = 0;
 volatile uint8_t tx_posicao = 0;    // Guarda a posição do caracter de transmissao
 
-char msg[] = "Atividade 5 – Interrupcoes periodicas do temporizador permitem a temporização de
-processos do sistema sem espera ativa! \n\n";
+const char msg[] = "Atividade 5 – Interrupcoes periodicas do temporizador permitem a temporização de processos do sistema sem espera ativa! \n\n";
 
 void inicializa()
 {
@@ -76,7 +78,7 @@ void inicializa()
     *p_UBRR0L = 51;
 
     *p_UCSR0A = 0x20;
-    *p_UCSR0B = 0xD8; 
+    *p_UCSR0B = 0x48;   // Habilitando TX e transmissão completa
     *p_UCSR0C = 0x06;
 
     sei();
