@@ -2,7 +2,10 @@
 Iago Lucini da Silva    281244
 Maria Clara martinez    281315
 */
+#define F_CPU 16000000UL
 
+#include <util/delay.h>
+#include <avr/io.h>
 #include <avr/interrupt.h>
 
 void enviar_mensagem(const char *mensagem);
@@ -30,7 +33,8 @@ unsigned char *p_ddrb = (unsigned char *) 0x24;
 volatile unsigned char *p_portb = (unsigned char *) 0x25;
 
 
-volatile int contador_USART = 0, contador_12 = 0, contador_13 = 0;
+volatile int  contador_12 = 0, contador_13 = 0;
+//volatile int contador_USART = 0;
 
 volatile const char *tx_buffer = 0;
 volatile uint8_t tx_posicao = 0;    // Guarda a posição do caracter de transmissao
@@ -77,7 +81,7 @@ void inicializa()
     *p_UBRR0H = 0;
     *p_UBRR0L = 51;
 
-    *p_UCSR0A = 0x20;   
+    *p_UCSR0A = 0x00;   
     *p_UCSR0B = 0x48;   // Habilitando TX e transmissão completa
     *p_UCSR0C = 0x06;   // Configura frame com 8 bits de dados, 1 bit de parada e sem paridade
 
@@ -111,7 +115,7 @@ ISR (TIMER0_COMPA_vect)
 
     contador_12++;
     contador_13++;
-    contador_USART++;
+    //contador_USART++;
 
 
     // Pisca o pino 13 (bit 5): 0,5s aceso e 0,5s apagado
@@ -144,11 +148,14 @@ ISR (TIMER0_COMPA_vect)
         contador_12 = 0;
     }
 
+    // Tinha utilizado o próprio temporizador para enviar a mensagem a cada 5s
+    /*
     if(contador_USART >= 5000)
     {
         enviar_mensagem(msg);
         contador_USART = 0;
     }
+    */
 }
 
 
@@ -170,7 +177,11 @@ Em relação à UART, vamos utilizar a mesma configuração do exercício para c
 int main(void) {
     inicializa();
 
-    while (1);
+    while (1)
+    {
+        enviar_mensagem(msg);
+        _delay_ms(5000);
+    }
 
     return 0;
 }

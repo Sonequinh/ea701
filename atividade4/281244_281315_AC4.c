@@ -157,9 +157,9 @@ int main ()
                     case 'b': // Azul
 
                         *p_PORTB |= (1 << 5);
-                        _delay_ms(200;);
+                        _delay_ms(200);
                         *p_PORTB &= ~(1 << 5);
-                        _delay_ms(200;);
+                        _delay_ms(200);
 
                         enviar_mensagem("Pisca azul\n");
                         break;
