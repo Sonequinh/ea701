@@ -34,7 +34,6 @@ volatile int interrompeu = 0;
 // transmissão
 volatile char tx_buffer[20];
 volatile uint8_t tx_posicao = 0;    // Guarda a posição do caracter de transmissao
-volatile uint8_t tx_ocupado = 0;
 
 // recepção
 volatile char rx_buffer[20];        // ->
@@ -111,6 +110,7 @@ ISR (USART_TX_vect) // USART TRANSMIT COMPLETE
     {
         *p_UDR0 = tx_buffer[tx_posicao];    // Escreve o caracter
     }
+    
 }
 
 
@@ -123,9 +123,7 @@ int main ()
     {
         if (interrompeu) 
         {
-            
-            if (rx_buffer[1] == '\0') 
-            {
+
                 switch (rx_buffer[0]) 
                 {
                     // Vermelho PINO 12 -> PB4
@@ -190,5 +188,4 @@ int main ()
             interrompeu = 0;
         }
 
-    }
 }
