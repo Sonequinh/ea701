@@ -9,6 +9,17 @@ unsigned char *p_TCCR0A = (unsigned char *) 0x44;
 unsigned char *p_TCCR0B = (unsigned char *) 0x45;
 unsigned char *p_TIMSK0 = (unsigned char *) 0x6E;
 
+// USART Baud Rate 0 Register Low / High
+unsigned char *p_UBRR0L = (unsigned char *) 0xC4; 
+unsigned char *p_UBRR0H = (unsigned char *) 0xC5;
+
+// USART0 Control and Status Register A
+unsigned char *p_UCSR0A = (unsigned char *) 0XC0;
+// USART0 Control and Status Register B
+unsigned char *p_UCSR0B = (unsigned char *) 0XC1;
+// USART0 Control and Status Register C
+unsigned char *p_UCSR0C = (unsigned char *) 0XC2;
+
 //registradores do led
 unsigned char *p_ddrb = (unsigned char *) 0x24;
 volatile unsigned char *p_portb = (unsigned char *) 0x25;
