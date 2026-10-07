@@ -49,7 +49,7 @@ void inicializa()
     /*
     f_cpu = 16000000 Hz
     f_desejada = 1000 Hz -> queremos uma base de 1ms
-    P = 64
+    P = 64 -> resulta em um inteiro exato e mais próximo do limite de OCR0A = 255
 
     f_desejada = P * (1/f_cpu) * (OCR0A) ->
     OCR0A = (f_cpu / P * f_desejada) - 1
@@ -58,9 +58,9 @@ void inicializa()
     
     OCR0A = 249;
     
-    *p_TIMSK0 = 0x02;
-    *p_TCCR0A = 0x02;
-    *p_TCCR0B = 0b00000011;
+    *p_TIMSK0 = 0x02;           // Habilita interrupção por comparação no canal A
+    *p_TCCR0A = 0x02;           // Ativa o modo CTC
+    *p_TCCR0B = 0b00000011;     // Aplica prescaler de 64 e inicia a contagem
 
     // USART
     /*
@@ -77,9 +77,9 @@ void inicializa()
     *p_UBRR0H = 0;
     *p_UBRR0L = 51;
 
-    *p_UCSR0A = 0x20;
+    *p_UCSR0A = 0x20;   
     *p_UCSR0B = 0x48;   // Habilitando TX e transmissão completa
-    *p_UCSR0C = 0x06;
+    *p_UCSR0C = 0x06;   // Configura frame com 8 bits de dados, 1 bit de parada e sem paridade
 
     sei();
 }
