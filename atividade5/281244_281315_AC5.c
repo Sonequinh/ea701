@@ -10,6 +10,8 @@ unsigned char *p_TCCR0B = (unsigned char *) 0x45;
 unsigned char *p_TIMSK0 = (unsigned char *) 0x6E;
 
 // USART Baud Rate 0 Register Low / High
+unsigned char *p_UDR0 = (unsigned char *) 0xC6;
+
 unsigned char *p_UBRR0L = (unsigned char *) 0xC4; 
 unsigned char *p_UBRR0H = (unsigned char *) 0xC5;
 
@@ -25,7 +27,7 @@ unsigned char *p_ddrb = (unsigned char *) 0x24;
 volatile unsigned char *p_portb = (unsigned char *) 0x25;
 
 
-volatile int contador_USART = 0, contador_12 = 0, contador_13;
+volatile int contador_USART = 0, contador_12 = 0, contador_13 = 0;
 
 volatile char tx_buffer[200];
 volatile uint8_t tx_posicao = 0;    // Guarda a posição do caracter de transmissao
@@ -54,9 +56,9 @@ void inicializa()
     
     OCR0A = 249;
     
-    *p_TIMSK0=0x01;
-    *p_TCCR0A=0x02;
-    *p_TCCR0B=0b00000011;
+    *p_TIMSK0 = 0x02;
+    *p_TCCR0A = 0x02;
+    *p_TCCR0B = 0b00000011;
 
     // USART
     /*
@@ -80,51 +82,6 @@ void inicializa()
     sei();
 }
 
-ISR (TIMER0_COMPA_vect) 
-{
-
-    contador_12++;
-    contador_13++;
-    contador_USART++;
-
-
-    // Pisca o pino 13 (bit 5): 0,5s aceso e 0,5s apagado
-    if(contador >= 500)
-    {
-        if((*p_portb & 0x20) == 0)
-        {
-            *p_portb |= 0x20;       //liga
-        }
-        else
-        {
-            *p_portb &= (~0x20);    //desliga    
-        }
-
-        contador_13 = 0;
-    }
-
-    // Pisca o pino 12 (bit 4): 0,78s aceso e 0,78s apagado
-    if(contador >= 780)
-    {
-        if((*p_portb & 0x10) == 0)
-        {
-            *p_portb |= 0x10;       //liga
-        }
-        else
-        {
-            *p_portb &= (~0x10);    //desliga    
-        }
-
-        contador_12 = 0;
-    }
-
-    if(contador >= 5000)
-    {
-        enviar_mensagem(msg);
-        contador_USART = 0;
-    }
-}
-
 // Parte responsavel por enviar/transmitir a mensagem
 
 ISR (USART_TX_vect) // USART TRANSMIT COMPLETE
@@ -139,13 +96,60 @@ ISR (USART_TX_vect) // USART TRANSMIT COMPLETE
 }
 
 
-void enviar_mensagem(const char* mensagem)
+void enviar_mensagem(const char *mensagem)
 {    
     tx_buffer = mensagem;
 
     tx_posicao = 0;
-    *p_UDR0 = tx_buffer[0];
+    *p_UDR0 = tx_buffer[tx_posicao];
 }
+
+ISR (TIMER0_COMPA_vect) 
+{
+
+    contador_12++;
+    contador_13++;
+    contador_USART++;
+
+
+    // Pisca o pino 13 (bit 5): 0,5s aceso e 0,5s apagado
+    if(contador_13 >= 500)
+    {
+        if((*p_portb & 0x20) == 0)
+        {
+            *p_portb |= 0x20;       //liga
+        }
+        else
+        {
+            *p_portb &= (~0x20);    //desliga    
+        }
+
+        contador_13 = 0;
+    }
+
+    // Pisca o pino 12 (bit 4): 0,78s aceso e 0,78s apagado
+    if(contador_12 >= 780)
+    {
+        if((*p_portb & 0x10) == 0)
+        {
+            *p_portb |= 0x10;       //liga
+        }
+        else
+        {
+            *p_portb &= (~0x10);    //desliga    
+        }
+
+        contador_12 = 0;
+    }
+
+    if(contador_USART >= 5000)
+    {
+        enviar_mensagem(msg);
+        contador_USART = 0;
+    }
+}
+
+
 
 
 
