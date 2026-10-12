@@ -18,8 +18,8 @@ unsigned char *p_ddrd = (unsigned char *) 0x2A;
 
 //variaveis maquina debouncer
 int estadoDB = 0;
-volatile int contador=0;
-volatile int filtrado=1;
+volatile int contador = 0;
+volatile int filtrado = 1;
 int contagem_init = 1;
 
 //variaveis maquina LED
