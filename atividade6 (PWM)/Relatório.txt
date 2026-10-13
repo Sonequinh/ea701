@@ -1,0 +1,38 @@
+Então em relação a decisão de bits nos registradores:
+    TIMSK1(0x01):
+        \-> O bit 0 (TOIE1 = 1) habilita a interrupção por overflow
+    TCCR1A(0x22):
+        \-> O bit 5 (COM1B1 = 1) configura o canal B (OC1B / pino 10) para o modo não-invertido
+        \-> O bit 1 (WGM11 = 1) junto com os bits WGM13 e WGM12 para selecionar o modo fast PWM 14
+    TCCR1B(0x1A):
+        \-> O bit 4 e 3 (WGM13 = 1, WGM12, = 1) junto com o bit  WGM12 = 1 e WGM10 = 0, definem o modo fast PWM 14.
+        Esse modo define o TOP como ICR1 que fixamos em 39999 para gerar uma frequencia de 50 Hz
+        \-> Os bits 2, 1 e 0 (CS12 = 0, CS11 = 1, CS10 = 0), definem os bits de seleção de clock.
+        Dividindo o clock principal de 16 MHz por 8 (prescaler escolhido)
+
+Os valores utilizados no código foram calculados nesse relatório
+
+A partir da fórmula:
+    f_PWM = (f_clkI/O) / N * (1 + TOP)
+
+Sabemos que:
+    f_clkI/O = 16 MHz
+
+Escolhemos N = 8, é o menor prescaler sem que de overflow no registrador de 16 bits do registrado timer1
+Do roteiro tiramos que o f_PWM para o servo motor é de 50 Hz
+
+Substituindo os valores achamos um TOP = 39999.
+
+Para os angulos:
+Dá tabela do roteiro a largura mínimo (L_min) é 0,5 ms
+A largura em função do angulo (x) é dada por:
+    L(x) = L_min + [(x / 180) * delta_L]
+    delta_L = L_max - L_min
+
+O valor de OCR1A é dada pela relação:
+    tempo de 1 tick = prescaler / f_clkI/O = 0,0005 ms
+    OCR1A = L(x) / (tempo de 1 tick) = L(x) * 2000
+
+Então para os angulos 0, 30, 60, 90, 120, 150, 180 em graus o OCR1A correspondente deles é:
+    1000, 1667, 2333, 3000, 3667, 4333, 5000
+

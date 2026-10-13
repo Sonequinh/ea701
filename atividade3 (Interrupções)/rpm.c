@@ -60,7 +60,7 @@ void escreve_displays(int centena, int dezena) {
     *p_portb = (*p_portb & 0xC0) | ((seg_centena >> 1) & 0x3F);
 }
 
-int main(void) {
+int main() {
     inicializa();
     
     int frequencia_rpm = 0;
