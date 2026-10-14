@@ -16,7 +16,8 @@ volatile unsigned char *p_TCCR1A = (unsigned char *) 0x80;
 volatile unsigned char *p_TCCR1B = (unsigned char *) 0x81;
 volatile unsigned char *p_DDRB   = (unsigned char *) 0x24;
 
-
+volatile unsigned short *p_ICR1  = (unsigned short *) 0x86;
+volatile unsigned short *p_OCR1B = (unsigned short *) 0x8A;
 
 // Variaveis Globais
 // Lista que percorre os angulos de 0 até 180 e depois volta para 30
@@ -35,11 +36,11 @@ void inicializar ()
     // Habilita o pino ~10 como saída
     *p_DDRB |= 0x04;
 
-    OCR1B = angulos[0];
+    *p_OCR1B = angulos[0];
 
     cli();
 
-    ICR1 = 39999;
+    *p_ICR1 = 39999;
     
     *p_TIMSK1 = 0x01;                  
     *p_TCCR1A = 0x22;             
@@ -47,7 +48,6 @@ void inicializar ()
 
     sei();
 
-    // Definindo posição inicial do servo
 }
 
 ISR(TIMER1_OVF_vect) {
