@@ -55,7 +55,7 @@ void inicializa()
     f_desejada = 1000 Hz -> queremos uma base de 1ms
     P = 64 -> resulta em um inteiro exato e mais próximo do limite de OCR0A = 255
 
-    f_desejada = P * (1/f_cpu) * (OCR0A) ->
+    (1 / f_desejada) = P * (1/f_cpu) * (OCR0A + 1) ->
     OCR0A = (f_cpu / P * f_desejada) - 1
     OCR0A = 249
     */
@@ -119,6 +119,7 @@ ISR (TIMER0_COMPA_vect)
 
 
     // Pisca o pino 13 (bit 5): 0,5s aceso e 0,5s apagado
+    // 1 TICK = 1ms (counter)
     if(contador_13 >= 500)
     {
         if((*p_portb & 0x20) == 0)

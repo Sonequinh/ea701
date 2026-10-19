@@ -47,7 +47,7 @@ void inicializar ()
     *p_TCCR1B = 0x1A;             
 
     sei();
-
+ 
 }
 
 ISR(TIMER1_OVF_vect) {
